@@ -1,31 +1,89 @@
-import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { TrendingUp, TrendingDown, Activity, Wallet } from 'lucide-react';
+import { WalletInfo } from './WalletManager';
 
-export function TradingOverview() {
-  // Mock data
-  const currentPrice = 64234.56;
-  const rangeData = {
-    lower: 62800.0,
-    center: 64500.0,
-    upper: 66200.0,
-    status: 'range-bound' as const
-  };
+interface TradingOverviewProps {
+  walletConnected: boolean;
+  walletInfo: WalletInfo | null;
+}
 
-  const openPositions = [
-    { id: 'pos-1', side: 'LONG', entry: 63100.5, amount: 0.0234, pnl: 265.43, pnlPercent: 1.8 },
-    { id: 'pos-2', side: 'SHORT', entry: 65800.2, amount: 0.0156, pnl: 145.23, pnlPercent: 1.4 }
-  ];
+export function TradingOverview({ walletConnected, walletInfo }: TradingOverviewProps) {
+  const [currentPrice, setCurrentPrice] = useState<number>(0);
+  const [rangeData, setRangeData] = useState({
+    lower: 0,
+    center: 0,
+    upper: 0,
+    status: 'loading' as 'loading' | 'range-bound' | 'trend'
+  });
+  const [openPositions, setOpenPositions] = useState<any[]>([]);
+  const [recentTrades, setRecentTrades] = useState<any[]>([]);
 
-  const recentTrades = [
-    { id: 'trade-1', time: '14:23:45', side: 'BUY', price: 63100.5, amount: 0.0234, pnl: null },
-    { id: 'trade-2', time: '13:15:22', side: 'SELL', price: 64800.3, amount: 0.0189, pnl: 215.34 },
-    { id: 'trade-3', time: '12:04:11', side: 'BUY', price: 63500.1, amount: 0.0189, pnl: null }
-  ];
+  // Simulated market data (in real app, would connect to price feed)
+  useEffect(() => {
+    // Generate realistic price data based on Bollinger Bands strategy
+    const basePrice = 64000;
+    const volatility = 1500;
+    const sma = basePrice;
+    const std = volatility / 2;
+    const upperBand = sma + (2 * std);
+    const lowerBand = sma - (2 * std);
+
+    setCurrentPrice(basePrice + (Math.random() - 0.5) * 1000);
+    setRangeData({
+      lower: lowerBand,
+      center: sma,
+      upper: upperBand,
+      status: Math.random() > 0.3 ? 'range-bound' : 'trend'
+    });
+
+    // Mock positions (in real app, would fetch from backend)
+    setOpenPositions([
+      { id: 'pos-1', side: 'LONG', entry: 63100.5, amount: 0.0234, pnl: 265.43, pnlPercent: 1.8 },
+      { id: 'pos-2', side: 'SHORT', entry: 65800.2, amount: 0.0156, pnl: 145.23, pnlPercent: 1.4 }
+    ]);
+
+    // Mock recent trades
+    setRecentTrades([
+      { id: 'trade-1', time: '14:23:45', side: 'BUY', price: 63100.5, amount: 0.0234, pnl: null },
+      { id: 'trade-2', time: '13:15:22', side: 'SELL', price: 64800.3, amount: 0.0189, pnl: 215.34 },
+      { id: 'trade-3', time: '12:04:11', side: 'BUY', price: 63500.1, amount: 0.0189, pnl: null }
+    ]);
+
+    // Update price every 5 seconds
+    const interval = setInterval(() => {
+      setCurrentPrice(prev => prev + (Math.random() - 0.5) * 50);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Display wallet balance if connected
+  const displayBalance = walletInfo?.balances?.ETH || '0.00';
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <div className="flex items-center gap-2 mb-6">
-        <Activity className="w-5 h-5 text-purple-600" />
-        <h2 className="font-semibold text-lg">Trading Overview</h2>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <Activity className="w-5 h-5 text-purple-600" />
+          <h2 className="font-semibold text-lg">Trading Overview</h2>
+        </div>
+        
+        {/* Wallet Balance Display */}
+        {walletConnected && walletInfo ? (
+          <div className="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
+            <Wallet className="w-4 h-4 text-blue-600" />
+            <div className="text-right">
+              <div className="text-xs text-blue-600 font-medium">Balance</div>
+              <div className="text-sm font-bold text-gray-900">
+                {displayBalance} ETH
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="text-sm text-gray-500 italic">
+            Connect wallet to view balance
+          </div>
+        )}
       </div>
 
       {/* Trading Range */}

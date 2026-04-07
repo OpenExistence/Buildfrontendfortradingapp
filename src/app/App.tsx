@@ -1,17 +1,25 @@
 import { useState } from 'react';
-import { WalletManager } from './components/WalletManager';
+import { WalletManager, WalletInfo } from './components/WalletManager';
 import { TradingOverview } from './components/TradingOverview';
 import { SettingsPanel } from './components/SettingsPanel';
 import { LivePriceChart } from './components/LivePriceChart';
 import { PerformanceStats } from './components/PerformanceStats';
+import { TradingBotPanel } from './components/TradingBotPanel';
 import { Bot } from 'lucide-react';
 
 export default function App() {
   const [walletConnected, setWalletConnected] = useState(false);
+  const [walletInfo, setWalletInfo] = useState<WalletInfo | null>(null);
+  const [botActive, setBotActive] = useState(false);
 
-  const handleWalletConnect = (address: string) => {
-    console.log('Wallet connected:', address);
+  const handleWalletConnect = (info: WalletInfo) => {
+    console.log('Wallet connected:', info.address);
     setWalletConnected(true);
+    setWalletInfo(info);
+  };
+
+  const handleBotToggle = (active: boolean) => {
+    setBotActive(active);
   };
 
   return (
@@ -57,8 +65,17 @@ export default function App() {
 
           {/* Middle Column - Price Chart */}
           <div className="lg:col-span-2 space-y-6">
+            <TradingBotPanel 
+              botActive={botActive} 
+              onBotToggle={handleBotToggle}
+              walletConnected={walletConnected}
+              walletInfo={walletInfo}
+            />
             <LivePriceChart />
-            <TradingOverview />
+            <TradingOverview 
+              walletConnected={walletConnected}
+              walletInfo={walletInfo}
+            />
           </div>
         </div>
 
