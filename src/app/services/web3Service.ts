@@ -43,10 +43,10 @@ class Web3Service {
     }
   ];
 
-  // Common token addresses on Arbitrum
+  // Common token addresses on Arbitrum (updated addresses)
   private tokens = {
-    USDT: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
-    USDC: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
+    USDT: '0xf97f4df75117a2c413d68442978f2dab240ec84a', // Updated USDT Arbitrum
+    USDC: '0xaf88d065e77c8cC223932742C56199843D3FBF9B', // Updated USDC Arbitrum
     WBTC: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',
     ETH: 'native' // Native token
   };

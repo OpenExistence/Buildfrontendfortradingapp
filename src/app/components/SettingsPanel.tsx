@@ -1,19 +1,17 @@
-import { useState } from 'react';
 import { Settings, Save } from 'lucide-react';
+import { TradingSettings } from '../App';
 
-export function SettingsPanel() {
-  const [settings, setSettings] = useState({
-    capitalPerTrade: 10,
-    slippageTolerance: 0.5,
-    stopLoss: 3,
-    maxDrawdown: 15,
-    tradingEnabled: true,
-    cooldownMinutes: 5
-  });
+interface SettingsPanelProps {
+  settings: TradingSettings;
+  onSettingsChange: (settings: TradingSettings) => void;
+}
 
-  const handleSave = () => {
-    console.log('Settings saved:', settings);
-    // Mock save action
+export function SettingsPanel({ settings, onSettingsChange }: SettingsPanelProps) {
+  const handleChange = (key: keyof TradingSettings, value: number | boolean | string) => {
+    onSettingsChange({
+      ...settings,
+      [key]: value
+    });
   };
 
   return (
@@ -24,23 +22,53 @@ export function SettingsPanel() {
       </div>
 
       <div className="space-y-5">
+        {/* Amount Type Toggle */}
+        <div>
+          <label className="block text-sm text-gray-600 mb-2">
+            Trade Amount Type
+          </label>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleChange('amountType', 'percentage')}
+              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+                settings.amountType === 'percentage'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Percentage (%)
+            </button>
+            <button
+              onClick={() => handleChange('amountType', 'fixed')}
+              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+                settings.amountType === 'fixed'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Fixed ($)
+            </button>
+          </div>
+        </div>
+
         {/* Capital per trade */}
         <div>
           <label className="block text-sm text-gray-600 mb-2">
-            Capital per Trade (%)
+            {settings.amountType === 'percentage' ? 'Capital per Trade (%)' : 'Capital per Trade ($)'}
           </label>
           <input
             type="number"
             value={settings.capitalPerTrade}
-            onChange={(e) =>
-              setSettings({ ...settings, capitalPerTrade: Number(e.target.value) })
-            }
+            onChange={(e) => handleChange('capitalPerTrade', Number(e.target.value))}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             min="1"
-            max="100"
+            max={settings.amountType === 'percentage' ? 100 : 10000}
           />
           <p className="text-xs text-gray-500 mt-1">
-            Maximum capital to use per single trade
+            {settings.amountType === 'percentage' 
+              ? 'Maximum capital to use per single trade (% of balance)'
+              : 'Maximum capital to use per single trade (fixed amount)'
+            }
           </p>
         </div>
 
@@ -53,9 +81,7 @@ export function SettingsPanel() {
             type="number"
             step="0.1"
             value={settings.slippageTolerance}
-            onChange={(e) =>
-              setSettings({ ...settings, slippageTolerance: Number(e.target.value) })
-            }
+            onChange={(e) => handleChange('slippageTolerance', Number(e.target.value))}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             min="0.1"
             max="5"
@@ -72,10 +98,8 @@ export function SettingsPanel() {
           </label>
           <input
             type="number"
-            value={settings.stopLoss}
-            onChange={(e) =>
-              setSettings({ ...settings, stopLoss: Number(e.target.value) })
-            }
+            value={settings.stopLossStd}
+            onChange={(e) => handleChange('stopLossStd', Number(e.target.value))}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             min="1"
             max="5"
@@ -93,9 +117,7 @@ export function SettingsPanel() {
           <input
             type="number"
             value={settings.maxDrawdown}
-            onChange={(e) =>
-              setSettings({ ...settings, maxDrawdown: Number(e.target.value) })
-            }
+            onChange={(e) => handleChange('maxDrawdown', Number(e.target.value))}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             min="5"
             max="50"
@@ -113,9 +135,7 @@ export function SettingsPanel() {
           <input
             type="number"
             value={settings.cooldownMinutes}
-            onChange={(e) =>
-              setSettings({ ...settings, cooldownMinutes: Number(e.target.value) })
-            }
+            onChange={(e) => handleChange('cooldownMinutes', Number(e.target.value))}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             min="1"
             max="60"
@@ -134,9 +154,7 @@ export function SettingsPanel() {
             </div>
           </div>
           <button
-            onClick={() =>
-              setSettings({ ...settings, tradingEnabled: !settings.tradingEnabled })
-            }
+            onClick={() => handleChange('tradingEnabled', !settings.tradingEnabled)}
             className={`relative w-12 h-6 rounded-full transition-colors ${
               settings.tradingEnabled ? 'bg-green-500' : 'bg-gray-300'
             }`}
@@ -151,7 +169,7 @@ export function SettingsPanel() {
 
         {/* Save Button */}
         <button
-          onClick={handleSave}
+          onClick={() => console.log('Settings saved:', settings)}
           className="w-full flex items-center justify-center gap-2 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Save className="w-4 h-4" />

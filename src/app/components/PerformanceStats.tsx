@@ -1,7 +1,62 @@
 import { DollarSign, TrendingUp, Percent, Activity } from 'lucide-react';
+import { SimulationState } from '../App';
 
-export function PerformanceStats() {
-  const stats = [
+interface PerformanceStatsProps {
+  mode: 'real' | 'simulation';
+  simulationState?: SimulationState;
+}
+
+export function PerformanceStats({ mode, simulationState }: PerformanceStatsProps) {
+  // For simulation mode, calculate stats from simulationState
+  const simPnl = simulationState?.totalPnl || 0;
+  const simBalance = simulationState?.currentBalance || 10000;
+  const simInitial = simulationState?.initialBalance || 10000;
+  const simPnlPercent = ((simPnl / simInitial) * 100);
+  const simTrades = simulationState?.trades?.length || 0;
+  
+  // Mock real stats (would come from backend in production)
+  const stats = mode === 'simulation' ? [
+    {
+      id: 'pnl',
+      label: 'Total PnL',
+      value: `${simPnl >= 0 ? '+' : ''}$${simPnl.toFixed(2)}`,
+      change: `${simPnlPercent >= 0 ? '+' : ''}${simPnlPercent.toFixed(2)}%`,
+      icon: DollarSign,
+      color: simPnl >= 0 ? 'text-green-600' : 'text-red-600',
+      bgColor: simPnl >= 0 ? 'bg-green-50' : 'bg-red-50',
+      positive: simPnl >= 0
+    },
+    {
+      id: 'balance',
+      label: 'Current Balance',
+      value: `$${simBalance.toLocaleString()}`,
+      change: `$${simInitial.toLocaleString()} initial`,
+      icon: TrendingUp,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      positive: true
+    },
+    {
+      id: 'trades',
+      label: 'Total Trades',
+      value: simTrades.toString(),
+      change: simulationState?.isRunning ? 'Running' : 'Stopped',
+      icon: Activity,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      positive: true
+    },
+    {
+      id: 'avgtrade',
+      label: 'Avg Trade',
+      value: simTrades > 0 ? `$${(simPnl / simTrades).toFixed(2)}` : '$0.00',
+      change: simTrades > 0 ? '+0.00%' : 'No trades',
+      icon: TrendingUp,
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50',
+      positive: true
+    }
+  ] : [
     {
       id: 'pnl',
       label: 'Total PnL',
