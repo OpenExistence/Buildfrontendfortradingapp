@@ -2,14 +2,8 @@ import { useState, useEffect } from 'react';
 import { Wallet, Copy, CheckCircle2, AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import { web3Service, WalletInfo } from '../services/web3Service';
 
-export interface WalletInfo {
-  address: string;
-  chainId: number;
-  networkName: string;
-  balances: {
-    [token: string]: string;
-  };
-}
+// Re-export WalletInfo for convenience
+export type { WalletInfo };
 
 interface WalletManagerProps {
   onWalletConnect: (info: WalletInfo) => void;
@@ -53,6 +47,8 @@ export function WalletManager({ onWalletConnect }: WalletManagerProps) {
       const info = await web3Service.connectWallet();
       setWalletInfo(info);
       setIsConnected(true);
+      
+      console.log('[WalletManager] Connected, calling onWalletConnect with:', info);
       onWalletConnect(info);
 
       // If not on Arbitrum, prompt to switch

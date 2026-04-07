@@ -13,7 +13,7 @@ export default function App() {
   const [botActive, setBotActive] = useState(false);
 
   const handleWalletConnect = (info: WalletInfo) => {
-    console.log('Wallet connected:', info.address);
+    console.log('[App] handleWalletConnect called with:', info);
     setWalletConnected(true);
     setWalletInfo(info);
   };

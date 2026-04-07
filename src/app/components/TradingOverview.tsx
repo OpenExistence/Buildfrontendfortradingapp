@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Activity, Wallet } from 'lucide-react';
-import { WalletInfo } from './WalletManager';
+import { WalletInfo } from '../services/web3Service';
 
 interface TradingOverviewProps {
   walletConnected: boolean;
@@ -57,8 +57,16 @@ export function TradingOverview({ walletConnected, walletInfo }: TradingOverview
     return () => clearInterval(interval);
   }, []);
 
+  // Debug: Log walletInfo changes
+  useEffect(() => {
+    console.log('[TradingOverview] walletConnected:', walletConnected);
+    console.log('[TradingOverview] walletInfo:', walletInfo);
+  }, [walletConnected, walletInfo]);
+
   // Display wallet balance if connected
   const displayBalance = walletInfo?.balances?.ETH || '0.00';
+  const displayBalanceUSDC = walletInfo?.balances?.USDC || '0.00';
+  const displayBalanceUSDT = walletInfo?.balances?.USDT || '0.00';
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -68,19 +76,30 @@ export function TradingOverview({ walletConnected, walletInfo }: TradingOverview
           <h2 className="font-semibold text-lg">Trading Overview</h2>
         </div>
         
-        {/* Wallet Balance Display */}
+        {/* Wallet Balance Display - ALL TOKENS */}
         {walletConnected && walletInfo ? (
-          <div className="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
-            <Wallet className="w-4 h-4 text-blue-600" />
-            <div className="text-right">
-              <div className="text-xs text-blue-600 font-medium">Balance</div>
-              <div className="text-sm font-bold text-gray-900">
-                {displayBalance} ETH
+          <div className="flex items-center gap-3 bg-blue-50 px-4 py-3 rounded-lg border border-blue-200">
+            <Wallet className="w-6 h-6 text-blue-600" />
+            <div className="flex-1">
+              <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide">Wallet Balance</div>
+              <div className="flex gap-4 mt-1">
+                <div>
+                  <span className="text-lg font-bold text-gray-900">{displayBalance}</span>
+                  <span className="text-sm text-gray-500 ml-1">ETH</span>
+                </div>
+                <div>
+                  <span className="text-lg font-bold text-gray-900">{displayBalanceUSDC}</span>
+                  <span className="text-sm text-gray-500 ml-1">USDC</span>
+                </div>
+                <div>
+                  <span className="text-lg font-bold text-gray-900">{displayBalanceUSDT}</span>
+                  <span className="text-sm text-gray-500 ml-1">USDT</span>
+                </div>
               </div>
             </div>
           </div>
         ) : (
-          <div className="text-sm text-gray-500 italic">
+          <div className="text-sm text-gray-500 italic bg-gray-50 px-3 py-2 rounded">
             Connect wallet to view balance
           </div>
         )}
