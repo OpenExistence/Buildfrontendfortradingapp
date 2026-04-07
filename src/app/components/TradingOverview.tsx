@@ -70,6 +70,9 @@ export function TradingOverview({ walletConnected, walletInfo }: TradingOverview
   const displayBalance = walletInfo?.balances?.ETH || '0.00';
   const displayBalanceUSDC = walletInfo?.balances?.USDC || '0.00';
   const displayBalanceUSDT = walletInfo?.balances?.USDT || '0.00';
+  const displayBalanceWBTC = walletInfo?.balances?.WBTC || '0.00';
+  
+  const hasAnyBalance = parseFloat(displayBalance) > 0 || parseFloat(displayBalanceUSDC) > 0 || parseFloat(displayBalanceUSDT) > 0 || parseFloat(displayBalanceWBTC) > 0;
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -81,23 +84,32 @@ export function TradingOverview({ walletConnected, walletInfo }: TradingOverview
         
         {/* Wallet Balance Display - ALL TOKENS */}
         {walletConnected && walletInfo ? (
-          <div className="flex items-center gap-3 bg-blue-50 px-4 py-3 rounded-lg border border-blue-200">
-            <Wallet className="w-6 h-6 text-blue-600" />
-            <div className="flex-1">
-              <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide">Wallet Balance</div>
-              <div className="flex gap-4 mt-1">
-                <div>
-                  <span className="text-lg font-bold text-gray-900">{displayBalance}</span>
-                  <span className="text-sm text-gray-500 ml-1">ETH</span>
-                </div>
-                <div>
-                  <span className="text-lg font-bold text-gray-900">{displayBalanceUSDC}</span>
-                  <span className="text-sm text-gray-500 ml-1">USDC</span>
-                </div>
-                <div>
-                  <span className="text-lg font-bold text-gray-900">{displayBalanceUSDT}</span>
-                  <span className="text-sm text-gray-500 ml-1">USDT</span>
-                </div>
+          <div className="bg-blue-50 px-4 py-3 rounded-lg border border-blue-200">
+            <div className="flex items-center gap-2 mb-2">
+              <Wallet className="w-5 h-5 text-blue-600" />
+              <span className="text-sm font-semibold text-blue-800">Wallet Balance</span>
+              {!hasAnyBalance && (
+                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">
+                  No balance on Arbitrum
+                </span>
+              )}
+            </div>
+            <div className="grid grid-cols-4 gap-2 text-center">
+              <div className={`p-2 rounded ${parseFloat(displayBalance) > 0 ? 'bg-white shadow-sm' : 'bg-gray-100'}`}>
+                <div className="text-lg font-bold text-gray-900">{displayBalance}</div>
+                <div className="text-xs text-gray-500">ETH</div>
+              </div>
+              <div className={`p-2 rounded ${parseFloat(displayBalanceUSDC) > 0 ? 'bg-white shadow-sm' : 'bg-gray-100'}`}>
+                <div className="text-lg font-bold text-gray-900">{displayBalanceUSDC}</div>
+                <div className="text-xs text-gray-500">USDC</div>
+              </div>
+              <div className={`p-2 rounded ${parseFloat(displayBalanceUSDT) > 0 ? 'bg-white shadow-sm' : 'bg-gray-100'}`}>
+                <div className="text-lg font-bold text-gray-900">{displayBalanceUSDT}</div>
+                <div className="text-xs text-gray-500">USDT</div>
+              </div>
+              <div className={`p-2 rounded ${parseFloat(displayBalanceWBTC) > 0 ? 'bg-white shadow-sm' : 'bg-gray-100'}`}>
+                <div className="text-lg font-bold text-gray-900">{displayBalanceWBTC}</div>
+                <div className="text-xs text-gray-500">WBTC</div>
               </div>
             </div>
           </div>
