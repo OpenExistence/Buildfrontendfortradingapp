@@ -61,6 +61,9 @@ export function TradingOverview({ walletConnected, walletInfo }: TradingOverview
   useEffect(() => {
     console.log('[TradingOverview] walletConnected:', walletConnected);
     console.log('[TradingOverview] walletInfo:', walletInfo);
+    console.log('[TradingOverview] balances object:', walletInfo?.balances);
+    console.log('[TradingOverview] ETH balance value:', walletInfo?.balances?.ETH);
+    console.log('[TradingOverview] all keys in balances:', walletInfo?.balances ? Object.keys(walletInfo.balances) : 'no balances');
   }, [walletConnected, walletInfo]);
 
   // Display wallet balance if connected

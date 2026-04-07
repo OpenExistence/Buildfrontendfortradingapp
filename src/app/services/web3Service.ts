@@ -86,6 +86,7 @@ class Web3Service {
 
       // Get balances
       const balances = await this.getBalances(this.account);
+      console.log('[Web3Service] Raw balances from blockchain:', balances);
 
       return {
         address: this.account,
